@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block titulo %}THE  WALL !!{% endblock %}
+
+{% block contenido %}
+<div class="row mb-2">
+    <div class="col-9">
+        <h4>Bienvenid@: {{request.session.usuario.firstname}} {{request.session.usuario.lastname}}</h4>
+    </div>
+    <hr>
+</div>
+
+<div class="container">
+    <form action="/mensaje" method="POST">
+        {% csrf_token %}
+        <div class="row">   
+            <h3> Añadir Mensaje: </h3>     
+            <div class="col-9">                
+                <textarea type="text" class="form-control" name="cont_msg" rows=2></textarea> 
+            </div>
+            <div class="col-2 ms-5">
+                <button type="submit" class="btn btn-primary mt-3">Publicar</button>        
+            </div>
+        </div>
+    </form>    
+</div>
+
+
+<div class="containerfluid mt-4">
+    <div class="row">
+        <h4 class="mt-1"><b>Mensajes:</b></h4>
+        {% for mensaje in all_mensajes reversed %}
+        <b class="mt-2"> {{mensaje.usuario}} publicó el {{ mensaje.updated_at|date:'b d, Y H:i'}}</b>
+        <div class="col-9">                        
+            <div class="mb-1 border border-dark rounded">
+                <p class="px-3"> {{mensaje.contenido_mensaje}} </p>
+            </div>
+        </div>        
+        <div class="col-2 mt-1 ms-5">
+            {% if mensaje.usuario.id == request.session.usuario.id %}
+                <a class="btn btn-danger btn-sm mt-1 text-right" href="/borrar/{{cita.id}}">Borrar</a>
+            {% endif %}
+        </div>
+
+
+        <h5 class="ms-5">Comentarios:</h5>
+        {% for coment in mensaje.comentarios.all %}
+        <div class=" col-7 mb-2 ms-5 border border-info rounded">
+            <h6 class="ms-2"><b>{{coment.usuario}} comentó el {{coment.updated_at|date:'b d, Y H:i'}}</b></h6>
+            <p class="ms-2">{{coment.comentario}}</p>
+        </div>
+        {% endfor %}
+
+
+        
+        <form action="/comentario/{{ mensaje.id }}" method="POST">
+            {% csrf_token %}
+            <div class="row">   
+                <h6 class="ms-5"> Añadir Comentario: </h6>     
+                <div class="col-9">                
+                    <textarea type="text" class="form-control ms-5 mb-4" name="cont_coment" rows=1></textarea> 
+                    <hr><br>
+                </div>
+                <div class="col-2 ms-5 pb-2">
+                    <button type="submit" class="btn btn-info btn-sm mt-1">Publicar</button>        
+                </div>
+            </div>
+        </form>  
+
+
+
+
+
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endblock %}
+{% block libreria %}
+{% endblock %}
